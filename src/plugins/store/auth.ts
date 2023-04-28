@@ -1,48 +1,46 @@
-import {defineStore} from "pinia"
+import { defineStore } from "pinia";
+import router from "../router";
 
 export interface UserInfo {
-    instance: string,
-    username: string,
-    authToken: string,
-    role: string,
+  instance: string;
+  username: string;
+  authToken: string;
+  role: string;
 }
 
-let rawSavedUserInfo = localStorage.getItem("userInfo")
-let userInfo: UserInfo | undefined = undefined
+let rawSavedUserInfo = localStorage.getItem("userInfo");
+let userInfo: UserInfo | undefined = undefined;
 if (rawSavedUserInfo) {
-    userInfo = JSON.parse(rawSavedUserInfo) as UserInfo
+  userInfo = JSON.parse(rawSavedUserInfo) as UserInfo;
 
-    if (!(userInfo.username && userInfo.authToken && userInfo.role)) {
-        userInfo = undefined
-    }
+  if (!(userInfo.username && userInfo.authToken && userInfo.role)) {
+    userInfo = undefined;
+  }
 }
 
 export const useAuth = defineStore("auth", {
-    state: (): { userInfo: UserInfo | undefined } => ({
-        userInfo: userInfo,
-    }),
-    getters: {
-        isLoggedIn({userInfo}) {
-            return !!userInfo
-        }
+  state: (): { userInfo: UserInfo | undefined } => ({
+    userInfo: userInfo,
+  }),
+  getters: {
+    isLoggedIn({ userInfo }) {
+      return !!userInfo;
     },
-    actions: {
-        login({
-                  instance,
-                  username,
-                  password,
-                  rememberMe
-              }: { instance: string, username: string, password: string, rememberMe: boolean }) {
-            this.userInfo = {instance, username, authToken: Math.random() + "", role: "F"}
-            if (rememberMe) {
-                localStorage.setItem("userInfo", JSON.stringify(this.userInfo))
-            } else {
-                localStorage.removeItem("userInfo")
-            }
-            //throw new Error("Unimplemented auth")
-        },
-        logout() {
-
-        }
-    }
-})
+  },
+  actions: {
+    login({ instance, username, password, rememberMe }: { instance: string; username: string; password: string; rememberMe: boolean }) {
+      this.userInfo = { instance, username, authToken: Math.random() + "", role: "F" };
+      if (rememberMe) {
+        localStorage.setItem("userInfo", JSON.stringify(this.userInfo));
+      } else {
+        localStorage.removeItem("userInfo");
+      }
+      //throw new Error("Unimplemented auth")
+    },
+    logout() {
+      localStorage.removeItem("userInfo");
+      this.userInfo = undefined;
+      router.push("/login");
+    },
+  },
+});
