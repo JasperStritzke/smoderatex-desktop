@@ -29,6 +29,10 @@ export const useAuth = defineStore("auth", {
   },
   actions: {
     login({ instance, username, password, rememberMe }: { instance: string; username: string; password: string; rememberMe: boolean }) {
+      //just to debug the ui ^^
+      if(password !== "123123") {
+        throw new Error("Invalid credentials")
+      }
       this.userInfo = { instance, username, authToken: Math.random() + "", role: "F" };
       if (rememberMe) {
         localStorage.setItem("userInfo", JSON.stringify(this.userInfo));
@@ -40,7 +44,7 @@ export const useAuth = defineStore("auth", {
     logout() {
       localStorage.removeItem("userInfo");
       this.userInfo = undefined;
-      router.push("/login");
+      router.push("/login").catch();
     },
   },
 });
